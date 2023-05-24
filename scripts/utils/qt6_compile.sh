@@ -100,12 +100,13 @@ bash ./configure \
   -make libs \
   -sql-sqlite \
   -skip qt3d \
-  -skip qtwebengine \
   -skip qtmultimedia \
   -skip qtserialport \
   -skip qtsensors \
   -skip qtgamepad \
   -skip qtwebchannel \
+  -skip qtwebengine \
+  -skip qtwebview \
   -skip qtandroidextras \
   -feature-imageformat_png \
   -qt-doubleconversion \
