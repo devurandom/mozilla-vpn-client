@@ -100,7 +100,7 @@ bash ./configure \
   -make libs \
   -sql-sqlite \
   -skip qt3d \
-  -skip webengine \
+  -skip qtwebengine \
   -skip qtmultimedia \
   -skip qtserialport \
   -skip qtsensors \
