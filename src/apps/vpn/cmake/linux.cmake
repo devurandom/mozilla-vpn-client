@@ -7,7 +7,7 @@ target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
 
 # If we are using static Qt, try to encourage GCC to statically link everything.
 if (QT_FEATURE_static)
-    target_link_options(mozillavpn PRIAVE -static)
+    target_link_options(mozillavpn PRIVATE "-static")
 endif()
 
 find_package(PkgConfig REQUIRED)
