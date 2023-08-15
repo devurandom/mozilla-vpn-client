@@ -122,6 +122,7 @@ tasks:
             platform: addons/opt
     linux64-deb:
         # The addons-bundle release-artifacts are dynamically generated in the beetmover transform
+        requires-level: 1
         release-artifacts: [mozillavpn.deb]
         dependencies:
             build: build-linux64/release-deb
