@@ -163,7 +163,6 @@ tasks:
             tier: 1
             platform: addons/opt
     linux64-deb:
-        # The addons-bundle release-artifacts are dynamically generated in the beetmover transform
         worker-type: beetmover
         worker:
             chain-of-trust: true
