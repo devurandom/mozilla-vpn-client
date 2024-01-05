@@ -107,6 +107,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/errorhandler.h
     ${CMAKE_SOURCE_DIR}/src/feature/feature.cpp
     ${CMAKE_SOURCE_DIR}/src/feature/feature.h
+    ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelist.cpp
+    ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelist.h
     ${CMAKE_SOURCE_DIR}/src/filterproxymodel.cpp
     ${CMAKE_SOURCE_DIR}/src/filterproxymodel.h
     ${CMAKE_SOURCE_DIR}/src/fontloader.cpp
@@ -206,8 +208,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/taskauthenticate.h
     ${CMAKE_SOURCE_DIR}/src/tasks/deleteaccount/taskdeleteaccount.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/deleteaccount/taskdeleteaccount.h
-    ${CMAKE_SOURCE_DIR}/src/tasks/getfeaturelist/taskgetfeaturelist.cpp
-    ${CMAKE_SOURCE_DIR}/src/tasks/getfeaturelist/taskgetfeaturelist.h
     ${CMAKE_SOURCE_DIR}/src/tasks/function/taskfunction.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/function/taskfunction.h
     ${CMAKE_SOURCE_DIR}/src/tasks/group/taskgroup.cpp
