@@ -28,7 +28,7 @@ function(mz_add_new_module)
         MZ_ADD_NEW_MODULE # prefix
         "" # options
         "" # single-value args
-        "TARGET_NAME;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;DUMMY_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;TEST_SOURCES" # multi-value args
+        "TARGET_NAME;INCLUDE_DIRECTORIES;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;DUMMY_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;TEST_SOURCES" # multi-value args
         ${ARGN})
 
     # Create a target for the new module
@@ -53,6 +53,7 @@ function(mz_add_new_module)
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_CURRENT_BINARY_DIR}
+        ${MZ_ADD_NEW_MODULE_INCLUDE_DIRECTORIES}
     )
 
     # Set the sources
