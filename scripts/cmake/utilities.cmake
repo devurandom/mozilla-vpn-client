@@ -28,7 +28,7 @@ function(mz_add_new_module)
         MZ_ADD_NEW_MODULE # prefix
         "" # options
         "" # single-value args
-        "TARGET_NAME;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;DUMMY_SOURCES;QT_DEPENDENCIES;TEST_SOURCES" # multi-value args
+        "TARGET_NAME;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;DUMMY_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;TEST_SOURCES" # multi-value args
         ${ARGN})
 
     # Create a target for the new module
@@ -46,6 +46,7 @@ function(mz_add_new_module)
     endforeach()
     target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC
         ${QT_LINK_LIBRARIES}
+        ${MZ_DEPENDENCIES}
     )
 
     target_include_directories(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC

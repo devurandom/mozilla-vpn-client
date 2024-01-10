@@ -11,7 +11,7 @@
 #include "controller.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
 

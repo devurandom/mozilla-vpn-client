@@ -9,7 +9,7 @@
 
 #include "controller.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "networkwatcherimpl.h"
 #include "platforms/dummy/dummynetworkwatcher.h"

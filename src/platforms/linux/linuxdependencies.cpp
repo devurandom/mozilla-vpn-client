@@ -12,7 +12,7 @@
 #include <QMessageBox>
 
 #include "dbusclient.h"
-#include "logger.h"
+#include "logging/logger.h"
 
 namespace {
 
