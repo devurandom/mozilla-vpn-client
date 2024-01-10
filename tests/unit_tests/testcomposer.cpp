@@ -17,7 +17,7 @@
 #include "context/qmlengineholder.h"
 #include "helper.h"
 #include "localizer.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 void TestComposer::generic_data() {
   QTest::addColumn<QJsonObject>("json");

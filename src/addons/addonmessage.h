@@ -8,7 +8,7 @@
 #include "../composer/composer.h"
 #include "addon.h"
 #include "addonproperty.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 class QJsonObject;
 

@@ -10,7 +10,7 @@
 #include <QTranslator>
 
 #include "settings/settinggroup.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "state/addonstate.h"
 
 class AddonConditionWatcher;
