@@ -106,8 +106,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/composer/composerblocktitle.h
     ${CMAKE_SOURCE_DIR}/src/composer/composerblockunorderedlist.cpp
     ${CMAKE_SOURCE_DIR}/src/composer/composerblockunorderedlist.h
-    ${CMAKE_SOURCE_DIR}/src/cryptosettings.cpp
-    ${CMAKE_SOURCE_DIR}/src/cryptosettings.h
     ${CMAKE_SOURCE_DIR}/src/errorhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/errorhandler.h
     ${CMAKE_SOURCE_DIR}/src/feature/feature.cpp

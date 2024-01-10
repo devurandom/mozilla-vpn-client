@@ -11,8 +11,8 @@
 #include <QStandardPaths>
 
 #include "context/constants.h"
-#include "cryptosettings.h"
-#include "logger.h"
+#include "cryptosettings/cryptosettings.h"
+#include "logging/logger.h"
 #include "utilities/leakdetector.h"
 
 namespace {
