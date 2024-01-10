@@ -12,8 +12,8 @@
 
 #include "context/constants.h"
 #include "cryptosettings.h"
-#include "leakdetector.h"
 #include "logger.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 

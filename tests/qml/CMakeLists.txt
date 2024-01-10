@@ -194,8 +194,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/itempicker.h
     ${MZ_SOURCE_DIR}/languagei18n.cpp
     ${MZ_SOURCE_DIR}/languagei18n.h
-    ${MZ_SOURCE_DIR}/leakdetector.cpp
-    ${MZ_SOURCE_DIR}/leakdetector.h
     ${MZ_SOURCE_DIR}/localizer.cpp
     ${MZ_SOURCE_DIR}/localizer.h
     ${MZ_SOURCE_DIR}/models/licensemodel.cpp
@@ -236,16 +234,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/tasks/function/taskfunction.h
     ${MZ_SOURCE_DIR}/tasks/group/taskgroup.cpp
     ${MZ_SOURCE_DIR}/tasks/group/taskgroup.h
-    ${MZ_SOURCE_DIR}/temporarydir.cpp
-    ${MZ_SOURCE_DIR}/temporarydir.h
     ${MZ_SOURCE_DIR}/theme.cpp
     ${MZ_SOURCE_DIR}/theme.h
-    ${MZ_SOURCE_DIR}/urlopener.cpp
-    ${MZ_SOURCE_DIR}/urlopener.h
-    ${MZ_SOURCE_DIR}/utils.cpp
-    ${MZ_SOURCE_DIR}/utils.h
-    ${MZ_SOURCE_DIR}/versionutils.cpp
-    ${MZ_SOURCE_DIR}/versionutils.h
 )
 
 # VPN Client UI resources
