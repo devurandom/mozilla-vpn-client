@@ -5,7 +5,7 @@
 #ifndef CONNECTIONHEALTH_H
 #define CONNECTIONHEALTH_H
 
-#include "constants.h"
+#include "context/constants.h"
 #include "dnspingsender.h"
 #include "pinghelper.h"
 

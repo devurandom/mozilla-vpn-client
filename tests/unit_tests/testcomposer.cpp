@@ -14,9 +14,9 @@
 #include "composer/composerblocktext.h"
 #include "composer/composerblocktitle.h"
 #include "composer/composerblockunorderedlist.h"
+#include "context/qmlengineholder.h"
 #include "helper.h"
 #include "localizer.h"
-#include "qmlengineholder.h"
 #include "settingsholder.h"
 
 void TestComposer::generic_data() {

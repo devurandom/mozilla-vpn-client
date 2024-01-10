@@ -4,8 +4,8 @@
 
 #include "filterproxymodel.h"
 
+#include "context/qmlengineholder.h"
 #include "logging/logger.h"
-#include "qmlengineholder.h"
 
 namespace {
 Logger logger("FilterProxyModel");
