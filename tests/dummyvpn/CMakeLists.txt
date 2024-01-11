@@ -14,7 +14,7 @@ target_link_libraries(dummyvpn PRIVATE
     Qt6::Widgets
 )
 
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" 
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
    AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android" )
     target_link_libraries(dummyvpn PRIVATE
         Qt6::NetworkAuth
@@ -27,7 +27,6 @@ target_link_libraries(dummyvpn PRIVATE
     lottie
     nebula
     translations
-    qtglean
 )
 
 target_sources(dummyvpn PRIVATE
