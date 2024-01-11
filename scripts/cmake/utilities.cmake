@@ -28,7 +28,7 @@ function(mz_add_new_module)
         MZ_ADD_NEW_MODULE # prefix
         "" # options
         "" # single-value args
-        "TARGET_NAME;INCLUDE_DIRECTORIES;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;EXTRA_DEPENDENCIES;DUMMY_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;TEST_SOURCES" # multi-value args
+        "TARGET_NAME;INCLUDE_DIRECTORIES;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;EXTRA_DEPENDENCIES;DUMMY_SOURCES;TEST_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;RUST_DEPENDENCIES;" # multi-value args
         ${ARGN})
 
     # Create a target for the new module
@@ -38,12 +38,28 @@ function(mz_add_new_module)
         "$<$<CONFIG:Debug>:MZ_DEBUG>"
     )
 
-    # Link all required Qt dependencies
+    # Get list of required Qt dependencies
     find_package(Qt6 REQUIRED COMPONENTS ${MZ_ADD_NEW_MODULE_QT_DEPENDENCIES})
     set(QT_LINK_LIBRARIES)
     foreach(QT_DEPENDENCY ${MZ_ADD_NEW_MODULE_QT_DEPENDENCIES})
         list(APPEND QT_LINK_LIBRARIES "Qt6::${QT_DEPENDENCY}")
     endforeach()
+
+    # Build Rust creates and add to list of linkd targets.
+    foreach(RUST_CRATE_PATH ${MZ_ADD_NEW_MODULE_RUST_DEPENDENCIES})
+        # The name of the crate target is expected to be the name of the crate folder
+        get_filename_component(CRATE_NAME ${RUST_CRATE_PATH} NAME)
+
+        include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
+        add_rust_library(${CRATE_NAME}
+            PACKAGE_DIR ${RUST_CRATE_PATH}
+            BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+            CRATE_NAME ${CRATE_NAME}
+        )
+
+        list(APPEND MZ_ADD_NEW_MODULE_EXTRA_DEPENDENCIES ${CRATE_NAME})
+    endforeach()
+
     target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC
         ${QT_LINK_LIBRARIES}
         ${MZ_ADD_NEW_MODULE_MZ_DEPENDENCIES}
@@ -82,7 +98,7 @@ function(mz_add_new_module)
         find_package(Qt6 REQUIRED COMPONENTS Test)
         add_custom_target(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests)
         set_target_properties(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests PROPERTIES
-                EXCLUDE_FROM_ALL TRUE
+            EXCLUDE_FROM_ALL TRUE
         )
 
         add_dependencies(build_tests ${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests)
