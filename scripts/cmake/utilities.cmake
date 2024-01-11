@@ -83,7 +83,6 @@ function(mz_add_new_module)
         add_custom_target(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests)
         set_target_properties(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests PROPERTIES
                 EXCLUDE_FROM_ALL TRUE
-                FOLDER "Tests"
         )
 
         add_dependencies(build_tests ${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests)
@@ -98,6 +97,10 @@ function(mz_add_new_module)
 
             # Create a separate executable per test.
             qt_add_executable(${TEST_TARGET_NAME} ${TEST_FILE})
+            set_target_properties(${TEST_TARGET_NAME} PROPERTIES
+                EXCLUDE_FROM_ALL TRUE
+            )
+
             target_compile_definitions(${TEST_TARGET_NAME} PRIVATE
                 UNIT_TEST
                 "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
