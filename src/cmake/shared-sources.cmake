@@ -23,6 +23,8 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/utilities)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/networking)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/taskscheduler)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/telemetry)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/addons)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/translations)
 
 target_link_libraries(shared-sources INTERFACE
     mz_context
@@ -34,55 +36,12 @@ target_link_libraries(shared-sources INTERFACE
     mz_networking
     mz_taskscheduler
     mz_telemetry
+    mz_addons
+    mz_translations
 )
 
 # Shared components
 target_sources(shared-sources INTERFACE
-    ${CMAKE_SOURCE_DIR}/src/addons/addon.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/addon.h
-    ${CMAKE_SOURCE_DIR}/src/addons/addonapi.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/addonapi.h
-    ${CMAKE_SOURCE_DIR}/src/addons/addonguide.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/addonguide.h
-    ${CMAKE_SOURCE_DIR}/src/addons/addoni18n.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/addoni18n.h
-    ${CMAKE_SOURCE_DIR}/src/addons/addonmessage.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/addonmessage.h
-    ${CMAKE_SOURCE_DIR}/src/addons/addonproperty.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/addonproperty.h
-    ${CMAKE_SOURCE_DIR}/src/addons/addonpropertylist.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/addonpropertylist.h
-    ${CMAKE_SOURCE_DIR}/src/addons/addonreplacer.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/addonreplacer.h
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatcher.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatcher.h
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatchergroup.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatchergroup.h
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatcherjavascript.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatcherjavascript.h
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatcherlocales.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatcherlocales.h
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatchertime.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatchertime.h
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatchertimeend.h
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatchertimestart.h
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatchertranslationthreshold.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatchertranslationthreshold.h
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
-    ${CMAKE_SOURCE_DIR}/src/addons/manager/addondirectory.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/manager/addondirectory.h
-    ${CMAKE_SOURCE_DIR}/src/addons/manager/addonindex.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/manager/addonindex.h
-    ${CMAKE_SOURCE_DIR}/src/addons/manager/addonmanager.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/manager/addonmanager.h
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonstate.h
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonstatebase.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonstatebase.h
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonsessionstate.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonsessionstate.h
     ${CMAKE_SOURCE_DIR}/src/app.cpp
     ${CMAKE_SOURCE_DIR}/src/app.h
     ${CMAKE_SOURCE_DIR}/src/authenticationinapp/authenticationinapp.cpp
@@ -97,20 +56,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/authenticationlistener.h
     ${CMAKE_SOURCE_DIR}/src/collator.cpp
     ${CMAKE_SOURCE_DIR}/src/collator.h
-    ${CMAKE_SOURCE_DIR}/src/composer/composer.cpp
-    ${CMAKE_SOURCE_DIR}/src/composer/composer.h
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblock.cpp
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblock.h
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblockbutton.cpp
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblockbutton.h
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblockorderedlist.cpp
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblockorderedlist.h
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblocktext.cpp
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblocktext.h
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblocktitle.cpp
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblocktitle.h
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblockunorderedlist.cpp
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblockunorderedlist.h
     ${CMAKE_SOURCE_DIR}/src/errorhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/errorhandler.h
     ${CMAKE_SOURCE_DIR}/src/feature/feature.cpp
@@ -143,10 +88,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/ipaddress.h
     ${CMAKE_SOURCE_DIR}/src/itempicker.cpp
     ${CMAKE_SOURCE_DIR}/src/itempicker.h
-    ${CMAKE_SOURCE_DIR}/src/languagei18n.cpp
-    ${CMAKE_SOURCE_DIR}/src/languagei18n.h
-    ${CMAKE_SOURCE_DIR}/src/localizer.cpp
-    ${CMAKE_SOURCE_DIR}/src/localizer.h
     ${CMAKE_SOURCE_DIR}/src/logoutobserver.cpp
     ${CMAKE_SOURCE_DIR}/src/logoutobserver.h
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.cpp
@@ -165,10 +106,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc4291.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.cpp
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.h
-    ${CMAKE_SOURCE_DIR}/src/tasks/addon/taskaddon.cpp
-    ${CMAKE_SOURCE_DIR}/src/tasks/addon/taskaddon.h
-    ${CMAKE_SOURCE_DIR}/src/tasks/addonindex/taskaddonindex.cpp
-    ${CMAKE_SOURCE_DIR}/src/tasks/addonindex/taskaddonindex.h
     ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/taskauthenticate.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/taskauthenticate.h
     ${CMAKE_SOURCE_DIR}/src/tasks/deleteaccount/taskdeleteaccount.cpp

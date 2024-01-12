@@ -20,19 +20,70 @@ function(mz_target_handle_warnings MZ_TARGET)
     target_compile_options( ${MZ_TARGET} ${scope} -Wall -Werror -Wno-conversion)
 endfunction()
 
-# Creates a new module.
+# MZ_ADD_NEW_MODULE: A utility function for adding a new module to this project.
 #
-# This function assumes ${MZ_PLATFORM_NAME} is set in the environment.
+# Usage:
+# MZ_ADD_NEW_MODULE(
+#     TARGET_NAME <target_name>
+#     [INCLUDE_DIRECTORIES <include_directories>]
+#     [GENERATED_SOURCES <generated_sources>]
+#     [SOURCES <sources>]
+#     [IOS_SOURCES <ios_sources>]
+#     [ANDROID_SOURCES <android_sources>]
+#     [MACOS_SOURCES <macos_sources>]
+#     [LINUX_SOURCES <linux_sources>]
+#     [WINDOWS_SOURCES <windows_sources>]
+#     [WASM_SOURCES <wasm_sources>]
+#     [DUMMY_SOURCES <dummy_sources>]
+#     [TEST_SOURCES <test_sources>]
+#     [QT_DEPENDENCIES <qt_dependencies>]
+#     [MZ_DEPENDENCIES <mz_dependencies>]
+#     [RUST_DEPENDENCIES <rust_dependencies>]
+#     [EXTRA_DEPENDENCIES <extra_dependencies>]
+#     [TEST_DEPENDENCIES <test_dependencies>]
+# )
+#
+# Parameters:
+# - TARGET_NAME: The name of the target module.
+# - INCLUDE_DIRECTORIES: (Optional) List of additional include directories for the module.
+# - GENERATED_SOURCES: (Optional) List of generated source files for the module.
+# - SOURCES: (Optional) List of source files for the module.
+# - IOS_SOURCES: (Optional) List of iOS-specific source files for the module.
+# - ANDROID_SOURCES: (Optional) List of Android-specific source files for the module.
+# - MACOS_SOURCES: (Optional) List of macOS-specific source files for the module.
+# - LINUX_SOURCES: (Optional) List of Linux-specific source files for the module.
+# - WINDOWS_SOURCES: (Optional) List of Windows-specific source files for the module.
+# - WASM_SOURCES: (Optional) List of WebAssembly-specific source files for the module.
+# - DUMMY_SOURCES: (Optional) List of dummy sources for the module.
+# - TEST_SOURCES: (Optional) List of test source files for the module.
+# - QT_DEPENDENCIES: (Optional) List of Qt dependencies for the module.
+# - MZ_DEPENDENCIES: (Optional) List of custom module dependencies for the module.
+# - RUST_DEPENDENCIES: (Optional) List of Rust dependencies for the module.
+# - EXTRA_DEPENDENCIES: (Optional) List of additional dependencies for the module.
+# - TEST_DEPENDENCIES: (Optional) List of test-only dependencies.
+#   If the name of the dependency starts with `replace-<targetname>`
+#   it will replace <targetname> dependency for tests.
+#
+# Example:
+# MZ_ADD_NEW_MODULE(
+#     TARGET_NAME MyModule
+#     INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
+#     GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/generated_sources.cpp
+#     SOURCES src/file1.cpp src/file2.cpp
+#     TEST_SOURCES tests/test_file.cpp
+#     MZ_DEPENDENCIES mz_module
+# )
 function(mz_add_new_module)
     cmake_parse_arguments(
         MZ_ADD_NEW_MODULE # prefix
         "" # options
         "" # single-value args
-        "TARGET_NAME;INCLUDE_DIRECTORIES;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;EXTRA_DEPENDENCIES;DUMMY_SOURCES;TEST_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;RUST_DEPENDENCIES;" # multi-value args
+        "TARGET_NAME;INCLUDE_DIRECTORIES;GENERATED_SOURCES;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;EXTRA_DEPENDENCIES;DUMMY_SOURCES;TEST_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;RUST_DEPENDENCIES;TEST_DEPENDENCIES" # multi-value args
         ${ARGN})
 
     # Create a target for the new module
     add_library(${MZ_ADD_NEW_MODULE_TARGET_NAME} STATIC)
+    mz_target_handle_warnings(${MZ_ADD_NEW_MODULE_TARGET_NAME})
     target_compile_definitions(${MZ_ADD_NEW_MODULE_TARGET_NAME} PRIVATE
         "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
         "$<$<CONFIG:Debug>:MZ_DEBUG>"
@@ -60,11 +111,12 @@ function(mz_add_new_module)
         list(APPEND MZ_ADD_NEW_MODULE_EXTRA_DEPENDENCIES ${CRATE_NAME})
     endforeach()
 
-    target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC
+    set(ALL_DEPENDENCIES
         ${QT_LINK_LIBRARIES}
         ${MZ_ADD_NEW_MODULE_MZ_DEPENDENCIES}
         ${MZ_ADD_NEW_MODULE_EXTRA_DEPENDENCIES}
     )
+    target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${ALL_DEPENDENCIES})
 
     target_include_directories(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -74,7 +126,9 @@ function(mz_add_new_module)
     )
 
     # Set the sources
-    target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_SOURCES})
+    target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC
+        ${MZ_ADD_NEW_MODULE_SOURCES}
+    )
     if(${MZ_PLATFORM_NAME} STREQUAL "ios")
         target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_IOS_SOURCES})
     elseif(${MZ_PLATFORM_NAME} STREQUAL "android")
@@ -103,31 +157,43 @@ function(mz_add_new_module)
 
         add_dependencies(build_tests ${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests)
 
-        set(CPP_ONLY_SOURCES ${MZ_ADD_NEW_MODULE_TEST_SOURCES})
-        list(FILTER CPP_ONLY_SOURCES INCLUDE REGEX "(.*)\\c\\p\\p$")
-        foreach(TEST_FILE ${CPP_ONLY_SOURCES})
+        set(CPP_TEST_FILES ${MZ_ADD_NEW_MODULE_TEST_SOURCES})
+        set(QRC_TEST_FILES ${MZ_ADD_NEW_MODULE_TEST_SOURCES})
+
+        # Generate list of test dependencies
+        set(ALL_DEPENDENCIES_WITHOUT_REPLACED ${ALL_DEPENDENCIES})
+        set(REPLACER_DEPENDENCIES ${MZ_ADD_NEW_MODULE_TEST_DEPENDENCIES})
+        list(FILTER REPLACER_DEPENDENCIES INCLUDE REGEX "^\\r\\e\\p\\l\\a\\c\\e\\-")
+        foreach(REPLACER_DEPENDENCY ${REPLACER_DEPENDENCIES})
+            # Get the name of the original dependency
+            string(REPLACE "replace-" "" ORIGINAL_DEPENDENCY ${REPLACER_DEPENDENCY})
+            # Remove it  from the list
+            list(REMOVE_ITEM ALL_DEPENDENCIES_WITHOUT_REPLACED ${ORIGINAL_DEPENDENCY})
+        endforeach()
+
+        list(FILTER QRC_TEST_FILES INCLUDE REGEX "(.*)\\q\\r\\c$")
+        list(FILTER CPP_TEST_FILES INCLUDE REGEX "(.*)\\c\\p\\p$")
+        foreach(TEST_FILE ${CPP_TEST_FILES})
             # The test executable name will be the name of the test file
             # + the name of the parent target as a prefix.
             get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
             set(TEST_TARGET_NAME "${MZ_ADD_NEW_MODULE_TARGET_NAME}-${TEST_NAME}")
 
-            # Create a separate executable per test.
-            qt_add_executable(${TEST_TARGET_NAME} ${TEST_FILE})
-            set_target_properties(${TEST_TARGET_NAME} PROPERTIES
-                EXCLUDE_FROM_ALL TRUE
+            mz_add_test_target(
+                TARGET_NAME
+                    ${TEST_TARGET_NAME}
+                TEST_COMMAND
+                    ${TEST_FILE}
+                PARENT_TARGET
+                    ${MZ_ADD_NEW_MODULE_TARGET_NAME}
+                SOURCES
+                    ${TEST_FILE}
+                    ${QRC_TEST_FILES}
+                    ${MZ_ADD_NEW_MODULE_SOURCES}
+                DEPENDENCIES
+                    ${ALL_DEPENDENCIES_WITHOUT_REPLACED}
+                    ${MZ_ADD_NEW_MODULE_TEST_DEPENDENCIES}
             )
-
-            target_compile_definitions(${TEST_TARGET_NAME} PRIVATE
-                UNIT_TEST
-                "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
-                "$<$<CONFIG:Debug>:MZ_DEBUG>"
-            )
-
-            # Add this executable to the <target>-alltests executable
-            add_dependencies(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests ${TEST_TARGET_NAME})
-
-            target_link_libraries(${TEST_TARGET_NAME} PRIVATE Qt6::Test)
-            target_link_libraries(${TEST_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_TARGET_NAME})
 
             get_filename_component(TEST_DIRECTORY ${TEST_FILE} DIRECTORY)
             target_include_directories(${TEST_TARGET_NAME} PRIVATE
@@ -145,4 +211,37 @@ function(mz_add_new_module)
             endif()
         endforeach()
     endif()
+endfunction()
+
+function(mz_add_test_target)
+    cmake_parse_arguments(
+        MZ_ADD_TEST # prefix
+        "" # options
+        "" # single-value args
+        "TARGET_NAME;TEST_COMMAND;PARENT_TARGET;SOURCES;DEPENDENCIES" # multi-value args
+        ${ARGN})
+
+    # Test targets are executable targets.
+    qt_add_executable(${MZ_ADD_TEST_TARGET_NAME}
+        ${MZ_ADD_TEST_SOURCES}
+    )
+    set_target_properties(${MZ_ADD_TEST_TARGET_NAME} PROPERTIES
+        EXCLUDE_FROM_ALL TRUE
+    )
+
+    add_test(
+        NAME ${MZ_ADD_TEST_TARGET_NAME}
+        COMMAND ${MZ_ADD_TEST_TEST_COMMAND}
+    )
+
+    target_compile_definitions(${MZ_ADD_TEST_TARGET_NAME} PRIVATE
+        UNIT_TEST
+        "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
+        "$<$<CONFIG:Debug>:MZ_DEBUG>"
+    )
+
+    add_dependencies(${MZ_ADD_TEST_PARENT_TARGET}-alltests ${MZ_ADD_TEST_TARGET_NAME})
+
+    target_link_libraries(${MZ_ADD_TEST_TARGET_NAME} PRIVATE Qt6::Test)
+    target_link_libraries(${MZ_ADD_TEST_TARGET_NAME} PUBLIC ${MZ_ADD_TEST_DEPENDENCIES})
 endfunction()
