@@ -83,8 +83,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/authenticationlistener.h
     ${MZ_SOURCE_DIR}/collator.cpp
     ${MZ_SOURCE_DIR}/collator.h
-    ${MZ_SOURCE_DIR}/errorhandler.cpp
-    ${MZ_SOURCE_DIR}/errorhandler.h
     ${MZ_SOURCE_DIR}/filterproxymodel.cpp
     ${MZ_SOURCE_DIR}/filterproxymodel.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.h
@@ -105,8 +103,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/itempicker.h
     ${MZ_SOURCE_DIR}/models/licensemodel.cpp
     ${MZ_SOURCE_DIR}/models/licensemodel.h
-    ${MZ_SOURCE_DIR}/qmlpath.cpp
-    ${MZ_SOURCE_DIR}/qmlpath.h
     ${MZ_SOURCE_DIR}/rfc/rfc1918.cpp
     ${MZ_SOURCE_DIR}/rfc/rfc1918.h
     ${MZ_SOURCE_DIR}/rfc/rfc4193.cpp

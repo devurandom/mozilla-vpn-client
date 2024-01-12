@@ -189,7 +189,7 @@ function(mz_add_new_module)
                 TARGET_NAME
                     ${TEST_TARGET_NAME}
                 TEST_COMMAND
-                    ${TEST_FILE}
+                    ${TEST_TARGET_NAME}
                 PARENT_TARGET
                     ${MZ_ADD_NEW_MODULE_TARGET_NAME}
                 SOURCES
