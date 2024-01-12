@@ -116,7 +116,13 @@ function(mz_add_new_module)
         ${MZ_ADD_NEW_MODULE_MZ_DEPENDENCIES}
         ${MZ_ADD_NEW_MODULE_EXTRA_DEPENDENCIES}
     )
-    target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${ALL_DEPENDENCIES})
+    target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
+        PRIVATE ${ALL_DEPENDENCIES}
+    )
+    # Expose to linking libraries, what are the dependencies.
+    set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
+        INTERFACE_LINK_LIBRARIES ${ALL_DEPENDENCIES}
+    )
 
     target_include_directories(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
