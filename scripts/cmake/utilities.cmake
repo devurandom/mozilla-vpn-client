@@ -41,6 +41,12 @@ endfunction()
 #     [RUST_DEPENDENCIES <rust_dependencies>]
 #     [EXTRA_DEPENDENCIES <extra_dependencies>]
 #     [TEST_DEPENDENCIES <test_dependencies>]
+#     [ANDROID_DEPENDENCIES <android_dependencies>]
+#     [MACOS_DEPENDENCIES <macos_dependencies>]
+#     [LINUX_DEPENDENCIES <linux_dependencies>]
+#     [WINDOWS_DEPENDENCIES <windows_dependencies>]
+#     [WASM_DEPENDENCIES <wasm_dependencies>]
+#     [DUMMY_DEPENDENCIES <dummy_dependencies>]
 # )
 #
 # Parameters:
@@ -63,6 +69,13 @@ endfunction()
 # - TEST_DEPENDENCIES: (Optional) List of test-only dependencies.
 #   If the name of the dependency starts with `replace-<targetname>`
 #   it will replace <targetname> dependency for tests.
+# - IOS_DEPENDENCIES: (Optional) List of iOS-specific dependencies for the module.
+# - ANDROID_DEPENDENCIES: (Optional) List of Android-specific dependencies for the module.
+# - MACOS_DEPENDENCIES: (Optional) List of macOS-specific dependencies for the module.
+# - LINUX_DEPENDENCIES: (Optional) List of Linux-specific dependencies for the module.
+# - WINDOWS_DEPENDENCIES: (Optional) List of Windows-specific dependencies for the module.
+# - WASM_DEPENDENCIES: (Optional) List of WebAssembly-specific dependencies for the module.
+# - DUMMY_DEPENDENCIES: (Optional) List of dummy dependencies for the module.
 #
 # Example:
 # MZ_ADD_NEW_MODULE(
@@ -78,7 +91,7 @@ function(mz_add_new_module)
         MZ_ADD_NEW_MODULE # prefix
         "" # options
         "" # single-value args
-        "TARGET_NAME;INCLUDE_DIRECTORIES;GENERATED_SOURCES;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;EXTRA_DEPENDENCIES;DUMMY_SOURCES;TEST_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;RUST_DEPENDENCIES;TEST_DEPENDENCIES" # multi-value args
+        "TARGET_NAME;INCLUDE_DIRECTORIES;GENERATED_SOURCES;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;DUMMY_SOURCES;TEST_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;RUST_DEPENDENCIES;EXTRA_DEPENDENCIES;TEST_DEPENDENCIES;IOS_DEPENDENCIES;ANDROID_DEPENDENCIES;MACOS_DEPENDENCIES;LINUX_DEPENDENCIES;WINDOWS_DEPENDENCIES;WASM_DEPENDENCIES;DUMMY_DEPENDENCIES" # multi-value args
         ${ARGN})
 
     # Create a target for the new module
@@ -137,18 +150,67 @@ function(mz_add_new_module)
     )
     if(${MZ_PLATFORM_NAME} STREQUAL "ios")
         target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_IOS_SOURCES})
+        target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
+            PRIVATE ${MZ_ADD_NEW_MODULE_IOS_DEPENDENCIES}
+        )
+        set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
+            INTERFACE_LINK_LIBRARIES ${MZ_ADD_NEW_MODULE_IOS_DEPENDENCIES}
+        )
+        list(APPEND ALL_DEPENDENCIES ${MZ_ADD_NEW_MODULE_IOS_DEPENDENCIES})
     elseif(${MZ_PLATFORM_NAME} STREQUAL "android")
         target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_ANDROID_SOURCES})
+        target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
+            PRIVATE ${MZ_ADD_NEW_MODULE_ANDROID_DEPENDENCIES}
+        )
+        set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
+            INTERFACE_LINK_LIBRARIES ${MZ_ADD_NEW_MODULE_ANDROID_DEPENDENCIES}
+        )
+        list(APPEND ALL_DEPENDENCIES ${MZ_ADD_NEW_MODULE_ANDROID_DEPENDENCIES})
     elseif(${MZ_PLATFORM_NAME} STREQUAL "macos")
         target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_MACOS_SOURCES})
+        target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
+            PRIVATE ${MZ_ADD_NEW_MODULE_MACOS_DEPENDENCIES}
+        )
+        set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
+            INTERFACE_LINK_LIBRARIES ${MZ_ADD_NEW_MODULE_MACOS_DEPENDENCIES}
+        )
+        list(APPEND ALL_DEPENDENCIES ${MZ_ADD_NEW_MODULE_MACOS_DEPENDENCIES})
     elseif(${MZ_PLATFORM_NAME} STREQUAL "linux")
         target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_LINUX_SOURCES})
+        target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
+            PRIVATE ${MZ_ADD_NEW_MODULE_LINUX_DEPENDENCIES}
+        )
+        set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
+            INTERFACE_LINK_LIBRARIES ${MZ_ADD_NEW_MODULE_LINUX_DEPENDENCIES}
+        )
+        list(APPEND ALL_DEPENDENCIES ${MZ_ADD_NEW_MODULE_LINUX_DEPENDENCIES})
     elseif(${MZ_PLATFORM_NAME} STREQUAL "windows")
         target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_WINDOWS_SOURCES})
+        target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
+            PRIVATE ${MZ_ADD_NEW_MODULE_WINDOWS_DEPENDENCIES}
+        )
+        set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
+            INTERFACE_LINK_LIBRARIES ${MZ_ADD_NEW_MODULE_WINDOWS_DEPENDENCIES}
+        )
+        list(APPEND ALL_DEPENDENCIES ${MZ_ADD_NEW_MODULE_WINDOWS_DEPENDENCIES})
     elseif(${MZ_PLATFORM_NAME} STREQUAL "wasm")
         target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_WASM_SOURCES})
+        target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
+            PRIVATE ${MZ_ADD_NEW_MODULE_WASM_DEPENDENCIES}
+        )
+        set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
+            INTERFACE_LINK_LIBRARIES ${MZ_ADD_NEW_MODULE_WASM_DEPENDENCIES}
+        )
+        list(APPEND ALL_DEPENDENCIES ${MZ_ADD_NEW_MODULE_WASM_DEPENDENCIES})
     else()
         target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_DUMMY_SOURCES})
+        target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
+            PRIVATE ${MZ_ADD_NEW_MODULE_DUMMY_DEPENDENCIES}
+        )
+        set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
+            INTERFACE_LINK_LIBRARIES ${MZ_ADD_NEW_MODULE_DUMMY_DEPENDENCIES}
+        )
+        list(APPEND ALL_DEPENDENCIES ${MZ_ADD_NEW_MODULE_DUMMY_DEPENDENCIES})
     endif()
 
     # Create separate targets for each test,
