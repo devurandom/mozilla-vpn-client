@@ -26,7 +26,6 @@ endfunction()
 # MZ_ADD_NEW_MODULE(
 #     TARGET_NAME <target_name>
 #     [INCLUDE_DIRECTORIES <include_directories>]
-#     [GENERATED_SOURCES <generated_sources>]
 #     [SOURCES <sources>]
 #     [IOS_SOURCES <ios_sources>]
 #     [ANDROID_SOURCES <android_sources>]
@@ -52,7 +51,6 @@ endfunction()
 # Parameters:
 # - TARGET_NAME: The name of the target module.
 # - INCLUDE_DIRECTORIES: (Optional) List of additional include directories for the module.
-# - GENERATED_SOURCES: (Optional) List of generated source files for the module.
 # - SOURCES: (Optional) List of source files for the module.
 # - IOS_SOURCES: (Optional) List of iOS-specific source files for the module.
 # - ANDROID_SOURCES: (Optional) List of Android-specific source files for the module.
@@ -91,133 +89,61 @@ function(mz_add_new_module)
         MZ_ADD_NEW_MODULE # prefix
         "" # options
         "" # single-value args
-        "TARGET_NAME;INCLUDE_DIRECTORIES;GENERATED_SOURCES;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;DUMMY_SOURCES;TEST_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;RUST_DEPENDENCIES;EXTRA_DEPENDENCIES;TEST_DEPENDENCIES;IOS_DEPENDENCIES;ANDROID_DEPENDENCIES;MACOS_DEPENDENCIES;LINUX_DEPENDENCIES;WINDOWS_DEPENDENCIES;WASM_DEPENDENCIES;DUMMY_DEPENDENCIES" # multi-value args
+        "TARGET_NAME;INCLUDE_DIRECTORIES;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;DUMMY_SOURCES;TEST_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;RUST_DEPENDENCIES;EXTRA_DEPENDENCIES;TEST_DEPENDENCIES;IOS_DEPENDENCIES;ANDROID_DEPENDENCIES;MACOS_DEPENDENCIES;LINUX_DEPENDENCIES;WINDOWS_DEPENDENCIES;WASM_DEPENDENCIES;DUMMY_DEPENDENCIES" # multi-value args
         ${ARGN})
 
-    # Create a target for the new module
+
+    # Create a static lib for the new module.
     add_library(${MZ_ADD_NEW_MODULE_TARGET_NAME} STATIC)
+
+    # Define some compile defintions
     mz_target_handle_warnings(${MZ_ADD_NEW_MODULE_TARGET_NAME})
     target_compile_definitions(${MZ_ADD_NEW_MODULE_TARGET_NAME} PRIVATE
         "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
         "$<$<CONFIG:Debug>:MZ_DEBUG>"
     )
 
-    # Get list of required Qt dependencies
-    find_package(Qt6 REQUIRED COMPONENTS ${MZ_ADD_NEW_MODULE_QT_DEPENDENCIES})
-    set(QT_LINK_LIBRARIES)
-    foreach(QT_DEPENDENCY ${MZ_ADD_NEW_MODULE_QT_DEPENDENCIES})
-        list(APPEND QT_LINK_LIBRARIES "Qt6::${QT_DEPENDENCY}")
-    endforeach()
-
-    # Build Rust creates and add to list of linkd targets.
-    foreach(RUST_CRATE_PATH ${MZ_ADD_NEW_MODULE_RUST_DEPENDENCIES})
-        # The name of the crate target is expected to be the name of the crate folder
-        get_filename_component(CRATE_NAME ${RUST_CRATE_PATH} NAME)
-
-        include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
-        add_rust_library(${CRATE_NAME}
-            PACKAGE_DIR ${RUST_CRATE_PATH}
-            BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
-            CRATE_NAME ${CRATE_NAME}
-        )
-
-        list(APPEND MZ_ADD_NEW_MODULE_EXTRA_DEPENDENCIES ${CRATE_NAME})
-    endforeach()
-
-    set(ALL_DEPENDENCIES
-        ${QT_LINK_LIBRARIES}
-        ${MZ_ADD_NEW_MODULE_MZ_DEPENDENCIES}
-        ${MZ_ADD_NEW_MODULE_EXTRA_DEPENDENCIES}
+    # Generate sources lists
+    mz_generate_sources_list(
+        SOURCES ${MZ_ADD_NEW_MODULE_SOURCES}
+        IOS_SOURCES ${MZ_ADD_NEW_MODULE_IOS_SOURCES}
+        ANDROID_SOURCES ${MZ_ADD_NEW_MODULE_ANDROID_SOURCES}
+        MACOS_SOURCES ${MZ_ADD_NEW_MODULE_MACOS_SOURCES}
+        LINUX_SOURCES ${MZ_ADD_NEW_MODULE_LINUX_SOURCES}
+        WINDOWS_SOURCES ${MZ_ADD_NEW_MODULE_WINDOWS_SOURCES}
+        WASM_SOURCES ${MZ_ADD_NEW_MODULE_WASM_SOURCES}
+        DUMMY_SOURCES ${MZ_ADD_NEW_MODULE_DUMMY_SOURCES}
     )
-    target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
-        PRIVATE ${ALL_DEPENDENCIES}
-    )
-    # Expose to linking libraries, what are the dependencies.
-    set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
-        INTERFACE_LINK_LIBRARIES ${ALL_DEPENDENCIES}
-    )
+    target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PRIVATE ${ALL_SOURCES})
 
+    # Generate dependencies lists
+    mz_generate_link_libraries(
+        QT_DEPENDENCIES  ${MZ_ADD_NEW_MODULE_QT_DEPENDENCIES}
+        MZ_DEPENDENCIES ${MZ_ADD_NEW_MODULE_MZ_DEPENDENCIES}
+        RUST_DEPENDENCIES ${MZ_ADD_NEW_MODULE_RUST_DEPENDENCIES}
+        EXTRA_DEPENDENCIES ${MZ_ADD_NEW_MODULE_EXTRA_DEPENDENCIES}
+        TEST_DEPENDENCIES ${MZ_ADD_NEW_MODULE_TEST_DEPENDENCIES}
+        IOS_DEPENDENCIES ${MZ_ADD_NEW_MODULE_IOS_DEPENDENCIES}
+        ANDROID_DEPENDENCIES ${MZ_ADD_NEW_MODULE_ANDROID_DEPENDENCIES}
+        MACOS_DEPENDENCIES ${MZ_ADD_NEW_MODULE_MACOS_DEPENDENCIES}
+        LINUX_DEPENDENCIES ${MZ_ADD_NEW_MODULE_LINUX_DEPENDENCIES}
+        WINDOWS_DEPENDENCIES ${MZ_ADD_NEW_MODULE_WINDOWS_DEPENDENCIES}
+        WASM_DEPENDENCIES ${MZ_ADD_NEW_MODULE_WASM_DEPENDENCIES}
+        DUMMY_DEPENDENCIES ${MZ_ADD_NEW_MODULE_DUMMY_DEPENDENCIES}
+    )
+    target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${LINK_LIBRARIES})
+
+    # Define include directories
     target_include_directories(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/src
-        ${CMAKE_CURRENT_BINARY_DIR}
         ${MZ_ADD_NEW_MODULE_INCLUDE_DIRECTORIES}
     )
-
-    # Set the sources
-    target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC
-        ${MZ_ADD_NEW_MODULE_SOURCES}
-    )
-    if(${MZ_PLATFORM_NAME} STREQUAL "ios")
-        target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_IOS_SOURCES})
-        target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
-            PRIVATE ${MZ_ADD_NEW_MODULE_IOS_DEPENDENCIES}
-        )
-        set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
-            INTERFACE_LINK_LIBRARIES ${MZ_ADD_NEW_MODULE_IOS_DEPENDENCIES}
-        )
-        list(APPEND ALL_DEPENDENCIES ${MZ_ADD_NEW_MODULE_IOS_DEPENDENCIES})
-    elseif(${MZ_PLATFORM_NAME} STREQUAL "android")
-        target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_ANDROID_SOURCES})
-        target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
-            PRIVATE ${MZ_ADD_NEW_MODULE_ANDROID_DEPENDENCIES}
-        )
-        set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
-            INTERFACE_LINK_LIBRARIES ${MZ_ADD_NEW_MODULE_ANDROID_DEPENDENCIES}
-        )
-        list(APPEND ALL_DEPENDENCIES ${MZ_ADD_NEW_MODULE_ANDROID_DEPENDENCIES})
-    elseif(${MZ_PLATFORM_NAME} STREQUAL "macos")
-        target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_MACOS_SOURCES})
-        target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
-            PRIVATE ${MZ_ADD_NEW_MODULE_MACOS_DEPENDENCIES}
-        )
-        set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
-            INTERFACE_LINK_LIBRARIES ${MZ_ADD_NEW_MODULE_MACOS_DEPENDENCIES}
-        )
-        list(APPEND ALL_DEPENDENCIES ${MZ_ADD_NEW_MODULE_MACOS_DEPENDENCIES})
-    elseif(${MZ_PLATFORM_NAME} STREQUAL "linux")
-        target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_LINUX_SOURCES})
-        target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
-            PRIVATE ${MZ_ADD_NEW_MODULE_LINUX_DEPENDENCIES}
-        )
-        set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
-            INTERFACE_LINK_LIBRARIES ${MZ_ADD_NEW_MODULE_LINUX_DEPENDENCIES}
-        )
-        list(APPEND ALL_DEPENDENCIES ${MZ_ADD_NEW_MODULE_LINUX_DEPENDENCIES})
-    elseif(${MZ_PLATFORM_NAME} STREQUAL "windows")
-        target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_WINDOWS_SOURCES})
-        target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
-            PRIVATE ${MZ_ADD_NEW_MODULE_WINDOWS_DEPENDENCIES}
-        )
-        set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
-            INTERFACE_LINK_LIBRARIES ${MZ_ADD_NEW_MODULE_WINDOWS_DEPENDENCIES}
-        )
-        list(APPEND ALL_DEPENDENCIES ${MZ_ADD_NEW_MODULE_WINDOWS_DEPENDENCIES})
-    elseif(${MZ_PLATFORM_NAME} STREQUAL "wasm")
-        target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_WASM_SOURCES})
-        target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
-            PRIVATE ${MZ_ADD_NEW_MODULE_WASM_DEPENDENCIES}
-        )
-        set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
-            INTERFACE_LINK_LIBRARIES ${MZ_ADD_NEW_MODULE_WASM_DEPENDENCIES}
-        )
-        list(APPEND ALL_DEPENDENCIES ${MZ_ADD_NEW_MODULE_WASM_DEPENDENCIES})
-    else()
-        target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${MZ_ADD_NEW_MODULE_DUMMY_SOURCES})
-        target_link_libraries(${MZ_ADD_NEW_MODULE_TARGET_NAME}
-            PRIVATE ${MZ_ADD_NEW_MODULE_DUMMY_DEPENDENCIES}
-        )
-        set_property(TARGET ${MZ_ADD_NEW_MODULE_TARGET_NAME} APPEND PROPERTY
-            INTERFACE_LINK_LIBRARIES ${MZ_ADD_NEW_MODULE_DUMMY_DEPENDENCIES}
-        )
-        list(APPEND ALL_DEPENDENCIES ${MZ_ADD_NEW_MODULE_DUMMY_DEPENDENCIES})
-    endif()
 
     # Create separate targets for each test,
     # one target that builds all tests from this module
     # and finally add this module's tests to the build_tests target which builds all tests.
     if(MZ_ADD_NEW_MODULE_TEST_SOURCES)
-        find_package(Qt6 REQUIRED COMPONENTS Test)
         add_custom_target(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests)
         set_target_properties(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests PROPERTIES
             EXCLUDE_FROM_ALL TRUE
@@ -226,21 +152,10 @@ function(mz_add_new_module)
         add_dependencies(build_tests ${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests)
 
         set(CPP_TEST_FILES ${MZ_ADD_NEW_MODULE_TEST_SOURCES})
-        set(QRC_TEST_FILES ${MZ_ADD_NEW_MODULE_TEST_SOURCES})
-
-        # Generate list of test dependencies
-        set(ALL_DEPENDENCIES_WITHOUT_REPLACED ${ALL_DEPENDENCIES})
-        set(REPLACER_DEPENDENCIES ${MZ_ADD_NEW_MODULE_TEST_DEPENDENCIES})
-        list(FILTER REPLACER_DEPENDENCIES INCLUDE REGEX "^\\r\\e\\p\\l\\a\\c\\e\\-")
-        foreach(REPLACER_DEPENDENCY ${REPLACER_DEPENDENCIES})
-            # Get the name of the original dependency
-            string(REPLACE "replace-" "" ORIGINAL_DEPENDENCY ${REPLACER_DEPENDENCY})
-            # Remove it  from the list
-            list(REMOVE_ITEM ALL_DEPENDENCIES_WITHOUT_REPLACED ${ORIGINAL_DEPENDENCY})
-        endforeach()
-
-        list(FILTER QRC_TEST_FILES INCLUDE REGEX "(.*)\\q\\r\\c$")
         list(FILTER CPP_TEST_FILES INCLUDE REGEX "(.*)\\c\\p\\p$")
+        set(QRC_TEST_FILES ${MZ_ADD_NEW_MODULE_TEST_SOURCES})
+        list(FILTER QRC_TEST_FILES INCLUDE REGEX "(.*)\\q\\r\\c$")
+
         foreach(TEST_FILE ${CPP_TEST_FILES})
             # The test executable name will be the name of the test file
             # + the name of the parent target as a prefix.
@@ -257,18 +172,9 @@ function(mz_add_new_module)
                 SOURCES
                     ${TEST_FILE}
                     ${QRC_TEST_FILES}
-                    ${MZ_ADD_NEW_MODULE_SOURCES}
+                    ${ALL_SOURCES}
                 DEPENDENCIES
-                    ${ALL_DEPENDENCIES_WITHOUT_REPLACED}
-                    ${MZ_ADD_NEW_MODULE_TEST_DEPENDENCIES}
-            )
-
-            get_filename_component(TEST_DIRECTORY ${TEST_FILE} DIRECTORY)
-            target_include_directories(${TEST_TARGET_NAME} PRIVATE
-                ${CMAKE_CURRENT_SOURCE_DIR}
-                ${CMAKE_CURRENT_BINARY_DIR}
-                ${CMAKE_SOURCE_DIR}/src
-                ${TEST_DIRECTORY}
+                    ${TEST_LINK_LIBRARIES}
             )
 
             # Check if the corresponding header file exists
@@ -308,8 +214,147 @@ function(mz_add_test_target)
         "$<$<CONFIG:Debug>:MZ_DEBUG>"
     )
 
-    add_dependencies(${MZ_ADD_TEST_PARENT_TARGET}-alltests ${MZ_ADD_TEST_TARGET_NAME})
-
     target_link_libraries(${MZ_ADD_TEST_TARGET_NAME} PRIVATE Qt6::Test)
-    target_link_libraries(${MZ_ADD_TEST_TARGET_NAME} PUBLIC ${MZ_ADD_TEST_DEPENDENCIES})
+    target_link_libraries(${MZ_ADD_TEST_TARGET_NAME} PUBLIC
+        ${MZ_ADD_TEST_PARENT_TARGET}
+        ${MZ_ADD_TEST_DEPENDENCIES}
+    )
+
+    target_include_directories(${TEST_TARGET_NAME} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_SOURCE_DIR}/src
+    )
+endfunction()
+
+# Sets the following new variables in the parent scope:
+#
+# LINK_LIBRARIES
+# TEST_LINK_LIBRARIES
+function(mz_generate_link_libraries)
+    cmake_parse_arguments(
+        MZ_GENERATE_LINK_LIBRARIES # prefix
+        "" # options
+        "" # single-value args
+        "QT_DEPENDENCIES;MZ_DEPENDENCIES;RUST_DEPENDENCIES;EXTRA_DEPENDENCIES;TEST_DEPENDENCIES;IOS_DEPENDENCIES;ANDROID_DEPENDENCIES;MACOS_DEPENDENCIES;LINUX_DEPENDENCIES;WINDOWS_DEPENDENCIES;WASM_DEPENDENCIES;DUMMY_DEPENDENCIES" # multi-value args
+        ${ARGN})
+
+    set(LOCAL_LINK_LIBRARIES)
+
+    # 1. Qt dependencies handling
+
+    # Get list of required Qt dependencies
+    find_package(Qt6 REQUIRED COMPONENTS ${MZ_GENERATE_LINK_LIBRARIES_QT_DEPENDENCIES})
+    foreach(QT_DEPENDENCY ${MZ_GENERATE_LINK_LIBRARIES_QT_DEPENDENCIES})
+        list(APPEND LOCAL_LINK_LIBRARIES "Qt6::${QT_DEPENDENCY}")
+    endforeach()
+
+    # 2. MZ dependencies handling
+
+    list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_MZ_DEPENDENCIES})
+
+    # 3. Rust dependencies handling
+
+    # Build Rust creates and add to list of linkd targets.
+    foreach(RUST_CRATE_PATH ${MZ_GENERATE_LINK_LIBRARIES_RUST_DEPENDENCIES})
+        # The name of the crate target is expected to be the name of the crate folder
+        get_filename_component(CRATE_NAME ${RUST_CRATE_PATH} NAME)
+
+        include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
+        add_rust_library(${CRATE_NAME}
+            PACKAGE_DIR ${RUST_CRATE_PATH}
+            BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+            CRATE_NAME ${CRATE_NAME}
+        )
+
+        list(APPEND LOCAL_LINK_LIBRARIES ${CRATE_NAME})
+    endforeach()
+
+    # 4. Platform specific dependencies handling
+
+    if(${MZ_PLATFORM_NAME} STREQUAL "ios")
+        list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_IOS_DEPENDENCIES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "android")
+        list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_ANDROID_DEPENDENCIES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "macos")
+        list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_MACOS_DEPENDENCIES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "linux")
+        list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_LINUX_DEPENDENCIES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "windows")
+        list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_WINDOWS_DEPENDENCIES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "wasm")
+        list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_WASM_DEPENDENCIES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "dummy")
+        list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_DUMMY_DEPENDENCIES})
+    else()
+        message(FATAL_ERROR "MZ_PLATFORM_NAME must be set before creating modules.")
+    endif()
+
+    # 5. Finalize the list of all dependencies
+
+    list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_EXTRA_DEPENDENCIES})
+
+    # 6. Test dependency handling
+
+    set(LOCAL_TEST_LINK_LIBRARIES ${LOCAL_LINK_LIBRARIES})
+
+    # Replace dependencies for test dependencies that start with `replace-`
+    set(REPLACER_DEPENDENCIES ${MZ_GENERATE_LINK_LIBRARIES_TEST_DEPENDENCIES})
+    list(FILTER REPLACER_DEPENDENCIES INCLUDE REGEX "^\\r\\e\\p\\l\\a\\c\\e\\-")
+    foreach(REPLACER_DEPENDENCY ${REPLACER_DEPENDENCIES})
+        # Get the name of the original dependency
+        string(REPLACE "replace-" "" ORIGINAL_DEPENDENCY ${REPLACER_DEPENDENCY})
+        # Remove it  from the list
+        list(REMOVE_ITEM LOCAL_TEST_LINK_LIBRARIES ${ORIGINAL_DEPENDENCY})
+    endforeach()
+
+    # Tests always need Qt6::Test
+    find_package(Qt6 REQUIRED COMPONENTS Test)
+    list(APPEND LOCAL_TEST_LINK_LIBRARIES Qt6::Test)
+
+    # Finalize the list of test dependencies.
+    list(APPEND LOCAL_TEST_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_TEST_DEPENDENCIES})
+
+    # 7. Set the lists in the parent scope.
+
+    set(LINK_LIBRARIES ${LOCAL_LINK_LIBRARIES} PARENT_SCOPE)
+    set(TEST_LINK_LIBRARIES ${LOCAL_TEST_LINK_LIBRARIES} PARENT_SCOPE)
+endfunction()
+
+# Sets the following new variables in the parent scope:
+#
+# ALL_SOURCES
+function(mz_generate_sources_list)
+    cmake_parse_arguments(
+    MZ_GENERATE_SOURCES_LIST # prefix
+    "" # options
+    "" # single-value args
+    "SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;DUMMY_SOURCES" # multi-value args
+    ${ARGN})
+
+    set(LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_SOURCES})
+
+    # 1. Handle platform specific sources
+
+    if(${MZ_PLATFORM_NAME} STREQUAL "ios")
+        list(APPEND LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_IOS_SOURCES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "android")
+        list(APPEND LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_ANDROID_SOURCES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "macos")
+        list(APPEND LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_MACOS_SOURCES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "linux")
+        list(APPEND LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_LINUX_SOURCES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "windows")
+        list(APPEND LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_WINDOWS_SOURCES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "wasm")
+        list(APPEND LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_WASM_SOURCES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "dummy")
+        list(APPEND LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_DUMMY_SOURCES})
+    else()
+        message(FATAL_ERROR "MZ_PLATFORM_NAME must be set before creating modules.")
+    endif()
+
+    # 2. Set the list in the parent scope.
+
+    set(ALL_SOURCES ${LOCAL_ALL_SOURCES} PARENT_SCOPE)
 endfunction()
