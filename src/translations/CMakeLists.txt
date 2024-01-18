@@ -4,7 +4,11 @@
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/generate_translations_target.cmake)
 generate_translations_target(translations ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/generated)
+
 generate_translations_target(replace-translations ${CMAKE_CURRENT_SOURCE_DIR}/tests/moctranslations ${CMAKE_CURRENT_BINARY_DIR}/tests/generated)
+set_target_properties(replace-translations PROPERTIES
+    EXCLUDE_FROM_ALL TRUE
+)
 
 mz_add_new_module(
     TARGET_NAME mz_translations
