@@ -5,12 +5,12 @@
 #include <QCoreApplication>
 
 #include "context/constants.h"
-#include "glean/mzglean.h"
 #include "helper.h"
 #include "i18nstrings.h"
 #include "logging/loghandler.h"
 #include "networking/networkrequest.h"
 #include "settings/settingsholder.h"
+#include "telemetry/glean/mzglean.h"
 #include "utilities/leakdetector.h"
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;

@@ -23,6 +23,10 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/androidconstants.h
         ${CMAKE_CURRENT_SOURCE_DIR}/androidvpnactivity.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/androidvpnactivity.h
+    LINUX_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/androidconstants.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/linuxenv.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/linuxenv.h
     IOS_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/iosconstants.swift
         ${CMAKE_CURRENT_SOURCE_DIR}/iostunnelmanager.swift
@@ -42,4 +46,6 @@ mz_add_new_module(
         mz_taskscheduler
     ANDROID_DEPENDENCIES
         mz_navigator
+    LINUX_DEPENDENCIES
+        Qt6::DBus
 )

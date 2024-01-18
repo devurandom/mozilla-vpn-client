@@ -7,10 +7,10 @@
 #include <QTimeZone>
 
 #include "glean/generated/metrics.h"
-#include "glean/mzglean.h"
 #include "qtglean.h"
 #include "settings/settingsholder.h"
 #include "settings/settingsmanager.h"
+#include "telemetry/glean/mzglean.h"
 #include "translations/localizer.h"
 
 void TestLocalizer::init() {

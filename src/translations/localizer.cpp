@@ -15,10 +15,10 @@
 
 #include "context/constants.h"
 #include "glean/generated/metrics.h"
-#include "glean/mzglean.h"
 #include "languagei18n.h"
 #include "logging/logger.h"
 #include "settings/settingsholder.h"
+#include "telemetry/glean/mzglean.h"
 #include "utilities/leakdetector.h"
 #include "utilities/resourceloader.h"
 

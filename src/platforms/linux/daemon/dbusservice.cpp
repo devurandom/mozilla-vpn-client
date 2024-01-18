@@ -18,8 +18,8 @@
 #include "dbus_adaptor.h"
 #include "logging/logger.h"
 #include "logging/loghandler.h"
-#include "platforms/linux/linuxdependencies.h"
 #include "utilities/leakdetector.h"
+#include "utilities/linuxutils.h"
 
 namespace {
 Logger logger("DBusService");
@@ -139,7 +139,7 @@ bool DBusService::activate(const QString& jsonConfig) {
   if (obj.contains("vpnDisabledApps")) {
     QJsonArray disabledApps = obj["vpnDisabledApps"].toArray();
     for (const QJsonValue& app : disabledApps) {
-      setAppState(LinuxDependencies::desktopFileId(app.toString()), Excluded);
+      setAppState(LinuxUtils::desktopFileId(app.toString()), Excluded);
     }
   }
 

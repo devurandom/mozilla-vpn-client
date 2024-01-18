@@ -26,6 +26,11 @@ class DBusClient final : public QObject {
   DBusClient(QObject* parent);
   ~DBusClient();
 
+  /**
+   * Checks the version of the currently running daemon.
+   */
+  static bool checkCurrentVersion();
+
   QDBusPendingCallWatcher* version();
 
   QDBusPendingCallWatcher* activate(const InterfaceConfig& config);

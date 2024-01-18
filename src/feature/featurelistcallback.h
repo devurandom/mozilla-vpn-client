@@ -16,8 +16,9 @@
 #ifdef MZ_LINUX
 #  include <QProcessEnvironment>
 
-#  include "platforms/linux/linuxdependencies.h"
-#  include "versionutils.h"
+#  include "context/linuxenv.h"
+#  include "utilities/linuxutils.h"
+#  include "utilities/versionutils.h"
 #endif
 
 // Generic callback functions
@@ -92,7 +93,7 @@ bool FeatureCallback_splitTunnel() {
 
   /* Control groups v2 must be mounted for app/traffic classification
    */
-  if (LinuxDependencies::findCgroup2Path().isNull()) {
+  if (LinuxUtils::findCgroup2Path().isNull()) {
     return false;
   }
 
@@ -104,7 +105,7 @@ bool FeatureCallback_splitTunnel() {
   }
   QStringList desktop = pe.value("XDG_CURRENT_DESKTOP").split(":");
   if (desktop.contains("GNOME")) {
-    QString shellVersion = LinuxDependencies::gnomeShellVersion();
+    QString shellVersion = LinuxEnv::gnomeShellVersion();
     if (shellVersion.isNull()) {
       return false;
     }
@@ -112,7 +113,7 @@ bool FeatureCallback_splitTunnel() {
       return false;
     }
   } else if (desktop.contains("KDE")) {
-    QString kdeVersion = LinuxDependencies::kdeFrameworkVersion();
+    QString kdeVersion = LinuxEnv::kdeFrameworkVersion();
     if (kdeVersion.isNull()) {
       return false;
     }

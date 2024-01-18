@@ -24,11 +24,11 @@
 #include "feature/feature.h"
 #include "feature/featuremodel.h"
 #include "glean/generated/metrics.h"
-#include "glean/mzglean.h"
 #include "helper.h"
 #include "qtglean.h"
 #include "settings/settingsholder.h"
 #include "systemtraynotificationhandler.h"
+#include "telemetry/glean/mzglean.h"
 #include "translations/localizer.h"
 
 void TestAddon2::init() {

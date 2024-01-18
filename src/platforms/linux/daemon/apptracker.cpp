@@ -11,10 +11,10 @@
 #include <QScopeGuard>
 #include <QtDBus/QtDBus>
 
-#include "../linuxdependencies.h"
 #include "dbustypeslinux.h"
 #include "logging/logger.h"
 #include "utilities/leakdetector.h"
+#include "utilities/linuxutils.h"
 
 constexpr const char* GTK_DESKTOP_APP_SERVICE = "org.gtk.gio.DesktopAppInfo";
 constexpr const char* GTK_DESKTOP_APP_PATH = "/org/gtk/gio/DesktopAppInfo";
@@ -33,7 +33,7 @@ AppTracker::AppTracker(QObject* parent) : QObject(parent) {
   logger.debug() << "AppTracker created.";
 
   /* Monitor for changes to the user's application control groups. */
-  m_cgroupMount = LinuxDependencies::findCgroup2Path();
+  m_cgroupMount = LinuxUtils::findCgroup2Path();
 }
 
 AppTracker::~AppTracker() {
@@ -207,7 +207,7 @@ QString AppTracker::findDesktopFileId(const QString& cgroup) {
                            this);
   QString source = interface.property("SourcePath").toString();
   if (!source.isEmpty() && source.endsWith(".desktop")) {
-    return LinuxDependencies::desktopFileId(source);
+    return LinuxUtils::desktopFileId(source);
   }
 
   // Otherwise, we don't know the desktop ID for this control group.

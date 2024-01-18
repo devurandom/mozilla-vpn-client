@@ -9,9 +9,9 @@
 
 #include "context/qmlengineholder.h"
 #include "glean/generated/metrics.h"
-#include "glean/mzglean.h"
 #include "navigator/navigator.h"
 #include "settings/settingsholder.h"
+#include "telemetry/glean/mzglean.h"
 #include "translations/localizer.h"
 #include "utilities/qmlpath.h"
 

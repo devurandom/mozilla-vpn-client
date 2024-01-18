@@ -8,7 +8,7 @@ target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
 find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(libcap REQUIRED IMPORTED_TARGET libcap)
-target_link_libraries(mozillavpn PRIVATE PkgConfig::libsecret PkgConfig::libcap)
+target_link_libraries(mozillavpn PRIVATE PkgConfig::libcap)
 
 # Linux platform source files
 target_sources(mozillavpn PRIVATE
@@ -22,8 +22,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxapplistprovider.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcontroller.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcontroller.h
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxdependencies.cpp
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxdependencies.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxnetworkwatcher.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxnetworkwatcher.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxnetworkwatcherworker.cpp

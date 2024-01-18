@@ -4,6 +4,7 @@
 
 #include "dbusclient.h"
 
+#include <QCoreApplication>
 #include <QDBusPendingCall>
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
@@ -38,6 +39,40 @@ DBusClient::DBusClient(QObject* parent) : QObject(parent) {
 }
 
 DBusClient::~DBusClient() { MZ_COUNT_DTOR(DBusClient); }
+
+// static
+bool DBusClient::checkCurrentVersion() {
+  DBusClient* dbus = new DBusClient(nullptr);
+  QDBusPendingCallWatcher* watcher = dbus->version();
+
+  bool completed = false;
+  bool value = false;
+  QObject::connect(
+      watcher, &QDBusPendingCallWatcher::finished, watcher,
+      [completed = &completed, value = &value](QDBusPendingCallWatcher* call) {
+        *completed = true;
+
+        QDBusPendingReply<QString> reply = *call;
+        if (reply.isError()) {
+          logger.error() << "DBus message received - error";
+          *value = false;
+          return;
+        }
+
+        QString version = reply.argumentAt<0>();
+        *value = version == PROTOCOL_VERSION;
+
+        logger.debug() << "DBus message received - daemon version:" << version
+                       << " - current version:" << PROTOCOL_VERSION;
+      });
+
+  while (!completed) {
+    QCoreApplication::processEvents();
+  }
+
+  delete dbus;
+  return value;
+}
 
 QDBusPendingCallWatcher* DBusClient::version() {
   logger.debug() << "Version via DBus";

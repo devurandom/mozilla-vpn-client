@@ -24,6 +24,9 @@ mz_add_new_module(
     ANDROID_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/androidutils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/androidutils.h
+    LINUX_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/linuxutils.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/linuxutils.h
     TEST_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testtemporarydir.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testtemporarydir.h

@@ -27,7 +27,6 @@
 #include "fontloader.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
-#include "glean/mzglean.h"
 #include "i18nstrings.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
@@ -55,6 +54,7 @@
 #include "serverlatency.h"
 #include "settings/settingsholder.h"
 #include "telemetry.h"
+#include "telemetry/glean/mzglean.h"
 #include "theme.h"
 #include "translations/localizer.h"
 #include "update/updater.h"
@@ -69,8 +69,10 @@
 #endif
 
 #ifdef MZ_LINUX
+#  include "context/linuxenv.h"
 #  include "eventlistener.h"
-#  include "platforms/linux/linuxdependencies.h"
+#  include "platforms/linux/dbusclient.h"
+#  include "utilities/linuxutils.h"
 #endif
 
 #ifdef MZ_MACOS
@@ -314,7 +316,15 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MZ_LINUX
     // Dependencies - so far, only for linux.
-    if (!LinuxDependencies::checkDependencies()) {
+    char* path = getenv("PATH");
+    if (!path) {
+      LinuxUtils::showAlert("No PATH env found.");
+      return 1;
+    }
+
+    if (!DBusClient::checkCurrentVersion()) {
+      LinuxUtils::showAlert(
+          "mozillavpn linuxdaemon needs to be updated or restarted.");
       return 1;
     }
 #endif
