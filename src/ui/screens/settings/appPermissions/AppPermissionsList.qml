@@ -18,6 +18,7 @@ ColumnLayout {
     objectName: "appListContainer"
     property string searchBarPlaceholder: ""
     readonly property string telemetryScreenId : "app_exclusions"
+    property int availableHeight: 0;
 
     spacing: MZTheme.theme.vSpacing
 
@@ -68,13 +69,18 @@ ColumnLayout {
             }
             enabled: MZSettings.vpnDisabledApps.length > 0
             visible: applist.count > 0
+            width: parent.width
         }
 
-        Repeater {
+        ListView {
             id: applist
 
             objectName: "appList"
             model: searchBarWrapper.getProxyModel()
+            height: availableHeight - itemSpacer.height - addApp.height
+            width: parent.width
+            interactive: true
+            spacing: MZTheme.theme.windowMargin
             delegate: RowLayout {
                 property string appIdForFunctionalTests: appID
                 id: appRow
@@ -128,6 +134,7 @@ ColumnLayout {
                     text: appName
                     color: MZTheme.theme.fontColorDark
                     horizontalAlignment: Text.AlignLeft
+                    width: parent.width
 
                     MZMouseArea {
                         anchors.fill: undefined
@@ -140,8 +147,15 @@ ColumnLayout {
             }
         }
 
+        Item {
+            id: itemSpacer
+            height: MZTheme.theme.vSpacing
+            width: parent.width
+        }
+
         MZLinkButton {
             objectName: "addApplication"
+            id: addApp
             labelText: addApplication
             textAlignment: Text.AlignLeft
             fontSize: MZTheme.theme.fontSize
