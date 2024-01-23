@@ -42,7 +42,7 @@ void TaskGetFeatureList::run() {
 
     body["experimenterId"] = unauthedExperimenterId;
   } else {
-    request->auth();
+    request->setAuthorizationHeader();
   }
 
   request->post(Constants::apiUrl(Constants::FeatureList), body);

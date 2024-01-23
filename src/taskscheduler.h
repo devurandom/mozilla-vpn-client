@@ -23,6 +23,14 @@ class TaskScheduler final : public QObject {
 
 #ifdef UNIT_TEST
   static void stop();
+  /**
+   * Get list of tasks awaiting to be executed.
+   *
+   * Note: The Task* pointers are owned by the TaskScheduler. When calling this
+   * function, care should be taken because once the task is executed it will be
+   * deleted. It is reccomended to use this while the event loop is stopped i.e.
+   * tasks are not being executed and are guaranteed not to have been deleted.
+   */
   static QList<Task*> tasks();
   static void reset();
 #endif

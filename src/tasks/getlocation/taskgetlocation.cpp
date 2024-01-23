@@ -33,7 +33,7 @@ void TaskGetLocation::run() {
   QString host = url.host();
 
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->auth();
+  request->setAuthorizationHeader();
   request->requestInternal().setRawHeader("Host", host.toLocal8Bit());
   request->requestInternal().setPeerVerifyName(host);
   request->get(url);

@@ -129,8 +129,8 @@ target_sources(app_unit_tests PRIVATE
     feature/testfeaturemodel.h
     feature/testtaskgetfeaturelist.cpp
     feature/testtaskgetfeaturelist.h
-    feature/testtaskgetfeaturelistworker.cpp
-    feature/testtaskgetfeaturelistworker.h
+    feature/testgetfeaturelistscheduler.cpp
+    feature/testgetfeaturelistscheduler.h
     settings/testsetting.cpp
     settings/testsetting.h
     settings/testsettinggroup.cpp

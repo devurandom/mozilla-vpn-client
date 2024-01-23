@@ -109,8 +109,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/feature/feature.h
     ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelist.cpp
     ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelist.h
-    ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelistworker.cpp
-    ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelistworker.h
+    ${CMAKE_SOURCE_DIR}/src/feature/getfeaturelistscheduler.cpp
+    ${CMAKE_SOURCE_DIR}/src/feature/getfeaturelistscheduler.h
     ${CMAKE_SOURCE_DIR}/src/filterproxymodel.cpp
     ${CMAKE_SOURCE_DIR}/src/filterproxymodel.h
     ${CMAKE_SOURCE_DIR}/src/fontloader.cpp

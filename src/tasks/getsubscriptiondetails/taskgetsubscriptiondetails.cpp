@@ -50,7 +50,7 @@ void TaskGetSubscriptionDetails::run() {
 
 void TaskGetSubscriptionDetails::runInternal() {
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->auth();
+  request->setAuthorizationHeader();
   request->get(Constants::apiUrl(Constants::SubscriptionDetails));
 
   connect(

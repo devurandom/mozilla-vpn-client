@@ -2,17 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "testtaskgetfeaturelistworker.h"
+#include "testgetfeaturelistscheduler.h"
 
 #include <QTest>
 
+#include "feature/getfeaturelistscheduler.h"
 #include "feature/taskgetfeaturelist.h"
-#include "feature/taskgetfeaturelistworker.h"
 #include "settingsholder.h"
 #include "task.h"
 #include "taskscheduler.h"
 
-void TestTaskGetFeatureListWorker::testTaskIsScheduledOnStart() {
+void TestGetFeatureListScheduler::testTaskIsScheduledOnStart() {
   SettingsHolder settingsHolder;
 
   // Stop the TaskScheduler so we can inpect the tasks scheduled.
@@ -20,7 +20,7 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledOnStart() {
 
   auto initialListOfTasks = TaskScheduler::tasks();
 
-  TaskGetFeatureListWorker worker;
+  GetFeatureListScheduler worker;
   worker.start(1 * 1000 * 60 * 60);  // 1hr
 
   auto updatedListOfTasks = TaskScheduler::tasks();
@@ -38,7 +38,7 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledOnStart() {
   TaskScheduler::reset();
 }
 
-void TestTaskGetFeatureListWorker::testTaskIsScheduledPeriodically() {
+void TestGetFeatureListScheduler::testTaskIsScheduledPeriodically() {
   SettingsHolder settingsHolder;
 
   // Stop the TaskScheduler so we can inpect the tasks scheduled.
@@ -46,7 +46,7 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledPeriodically() {
 
   auto initialListOfTasks = TaskScheduler::tasks();
 
-  TaskGetFeatureListWorker worker;
+  GetFeatureListScheduler worker;
   worker.start(200);  // 200ms
 
   // Sleep for 250 milliseconds,
@@ -72,7 +72,7 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledPeriodically() {
   TaskScheduler::reset();
 }
 
-void TestTaskGetFeatureListWorker::testTaskIsScheduledOnTokenChange() {
+void TestGetFeatureListScheduler::testTaskIsScheduledOnTokenChange() {
   SettingsHolder settingsHolder;
 
   // Stop the TaskScheduler so we can inpect the tasks scheduled.
@@ -80,7 +80,7 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledOnTokenChange() {
 
   auto initialListOfTasks = TaskScheduler::tasks();
 
-  TaskGetFeatureListWorker worker;
+  GetFeatureListScheduler worker;
   worker.start(1 * 1000 * 60 * 60);  // 1hr
 
   settingsHolder.setToken("aToken");
@@ -105,7 +105,7 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledOnTokenChange() {
   TaskScheduler::reset();
 }
 
-void TestTaskGetFeatureListWorker::testTimerIsStoppedOnDestruction() {
+void TestGetFeatureListScheduler::testTimerIsStoppedOnDestruction() {
   SettingsHolder settingsHolder;
 
   // Stop the TaskScheduler so we can inpect the tasks scheduled.
@@ -114,7 +114,7 @@ void TestTaskGetFeatureListWorker::testTimerIsStoppedOnDestruction() {
   auto initialListOfTasks = TaskScheduler::tasks();
 
   {
-    TaskGetFeatureListWorker worker;
+    GetFeatureListScheduler worker;
     worker.start(200);  // 200ms
 
     // Sleep for 250 milliseconds,
@@ -140,16 +140,16 @@ void TestTaskGetFeatureListWorker::testTimerIsStoppedOnDestruction() {
     initialListOfTasks = TaskScheduler::tasks();
   }
 
-  // Sleep more 250, if the timer hasn't stopped this will schedule more tasks.
-  // But it shouldn't.
+  // Sleep more 250, if the timer hasn't stopped this will schedule more
+  // tasks. But it shouldn't.
   QTest::qWait(250);
 
   // Also change the token, this should also not schedule any tasks unless
   // the signal connection was done incorrectly.
   settingsHolder.setToken("aToken");
 
-  // The scheduled tasks were consumed above, so this should be back to initial
-  // list of tasks size.
+  // The scheduled tasks were consumed above, so this should be back to
+  // initial list of tasks size.
   QCOMPARE(initialListOfTasks.count(), TaskScheduler::tasks().count());
 
   // Remove the TaskScheduler singleton so that state doesn't leak to other
@@ -157,4 +157,4 @@ void TestTaskGetFeatureListWorker::testTimerIsStoppedOnDestruction() {
   TaskScheduler::reset();
 }
 
-static TestTaskGetFeatureListWorker s_testTaskGetFeatureListWorker;
+static TestGetFeatureListScheduler s_testGetFeatureListScheduler;

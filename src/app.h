@@ -93,8 +93,6 @@ class App : public QObject {
     return App::instance()->userState() == App::UserAuthenticated;
   }
 
-  static QByteArray authorizationHeader();
-
   void quit();
 
  signals:

@@ -30,7 +30,7 @@ void TaskCaptivePortalLookup::run() {
   logger.debug() << "Resolving the captive portal detector URL";
 
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->auth();
+  request->setAuthorizationHeader();
   request->get(Constants::apiUrl(Constants::DNSDetectPortal));
 
   connect(request, &NetworkRequest::requestFailed, this,

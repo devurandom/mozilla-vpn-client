@@ -838,7 +838,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
 
   list.swap(m_getStatusCallbacks);
   for (const std::function<void(
-           const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
+           const QString&serverIpv4Gateway, const QString&deviceIpv4Address,
            uint64_t txBytes, uint64_t rxBytes)>&func : list) {
     func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
   }
@@ -972,7 +972,7 @@ bool Controller::activate(const ServerData& serverData,
     // replicate the behavior of a TaskAccount.
     TaskFunction* task = new TaskFunction([]() {});
     NetworkRequest* request = new NetworkRequest(task, 200);
-    request->auth();
+    request->setAuthorizationHeader();
     request->get(Constants::apiUrl(Constants::Account));
 
     connect(request, &NetworkRequest::requestFailed, this,

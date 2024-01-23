@@ -4,7 +4,7 @@
 
 #include "helper.h"
 
-class TestTaskGetFeatureListWorker final : public TestHelper {
+class TestGetFeatureListScheduler final : public TestHelper {
   Q_OBJECT
 
  private slots:

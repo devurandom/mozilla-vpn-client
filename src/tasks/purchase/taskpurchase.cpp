@@ -63,7 +63,7 @@ void TaskPurchase::run() {
                                                200
 #endif
   );
-  request->auth();
+  request->setAuthorizationHeader();
 
   switch (m_op) {
 #ifdef MZ_IOS

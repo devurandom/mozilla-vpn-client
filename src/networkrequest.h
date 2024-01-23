@@ -52,7 +52,7 @@ class NetworkRequest final : public QObject {
 
   static const QByteArray authorizationHeader();
 
-  void auth(const QByteArray& authorizationHeader = "");
+  void setAuthorizationHeader(const QByteArray& authorizationHeader = "");
 
   void disableTimeout();
 

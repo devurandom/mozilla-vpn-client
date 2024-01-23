@@ -140,7 +140,7 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
-  async forceSubscriptionManagementReauth() {
+  async forceSubscriptionManagementResetAuthorizationHeader() {
     const json = await this._writeCommand(
         'force_subscription_management_reauthentication');
     assert(

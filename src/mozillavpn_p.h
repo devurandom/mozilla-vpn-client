@@ -10,7 +10,7 @@
 #include "connectionbenchmark/connectionbenchmark.h"
 #include "connectionhealth.h"
 #include "controller.h"
-#include "feature/taskgetfeaturelistworker.h"
+#include "feature/getfeaturelistscheduler.h"
 #include "ipaddresslookup.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
@@ -48,7 +48,7 @@ struct MozillaVPNPrivate {
   ProfileFlow m_profileFlow;
   Telemetry m_telemetry;
   User m_user;
-  TaskGetFeatureListWorker m_taskGetFeatureListWorker;
+  GetFeatureListScheduler m_taskGetFeatureListWorker;
 };
 
 #endif  // MOZILLAVPN_PRIVATE_H

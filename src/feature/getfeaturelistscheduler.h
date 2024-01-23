@@ -30,12 +30,12 @@
  * passed in the request in plain text, but is gleaned from the JWT user token
  * sent to the server through the Authorization header.
  */
-class TaskGetFeatureListWorker final : public QObject {
+class GetFeatureListScheduler final : public QObject {
   Q_OBJECT
 
  public:
-  TaskGetFeatureListWorker(QObject* parent = nullptr);
-  ~TaskGetFeatureListWorker();
+  GetFeatureListScheduler(QObject* parent = nullptr);
+  ~GetFeatureListScheduler();
 
   /**
    * @brief Starts the worker.

@@ -13,7 +13,7 @@
 #include "controller.h"
 #include "dnshelper.h"
 #include "feature/feature.h"
-#include "feature/taskgetfeaturelistworker.h"
+#include "feature/getfeaturelistscheduler.h"
 #include "frontend/navigationbarmodel.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"

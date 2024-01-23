@@ -122,7 +122,8 @@ const QByteArray NetworkRequest::authorizationHeader() {
   return authorizationHeader;
 }
 
-void NetworkRequest::auth(const QByteArray& authorizationHeader) {
+void NetworkRequest::setAuthorizationHeader(
+    const QByteArray& authorizationHeader) {
   auto finalAuthorizationHeader = authorizationHeader;
 
   if (finalAuthorizationHeader.isEmpty()) {
