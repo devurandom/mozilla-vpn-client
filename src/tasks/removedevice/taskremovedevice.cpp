@@ -44,7 +44,7 @@ void TaskRemoveDevice::run() {
                  << logger.keys(m_publicKey);
 
   NetworkRequest* request = new NetworkRequest(this, 204);
-  request->auth(m_authHeader);
+  request->setAuthorizationHeader(m_authHeader);
   request->deleteResource(
       Constants::apiUrl(Constants::DeviceWithPublicKeyArgument)
           .arg(QUrl::toPercentEncoding(m_publicKey)));
