@@ -16,8 +16,6 @@ GetFeatureListScheduler::GetFeatureListScheduler(QObject* parent)
 
 GetFeatureListScheduler::~GetFeatureListScheduler() {
   MZ_COUNT_DTOR(GetFeatureListScheduler);
-
-  qDebug() << "Destructing!";
 }
 
 void GetFeatureListScheduler::start(int interval) {

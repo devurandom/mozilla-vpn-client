@@ -20,8 +20,8 @@ void TestGetFeatureListScheduler::testTaskIsScheduledOnStart() {
 
   auto initialListOfTasks = TaskScheduler::tasks();
 
-  GetFeatureListScheduler worker;
-  worker.start(1 * 1000 * 60 * 60);  // 1hr
+  GetFeatureListScheduler scheduler;
+  scheduler.start(1 * 1000 * 60 * 60);  // 1hr
 
   auto updatedListOfTasks = TaskScheduler::tasks();
 
@@ -46,11 +46,11 @@ void TestGetFeatureListScheduler::testTaskIsScheduledPeriodically() {
 
   auto initialListOfTasks = TaskScheduler::tasks();
 
-  GetFeatureListScheduler worker;
-  worker.start(200);  // 200ms
+  GetFeatureListScheduler scheduler;
+  scheduler.start(200);  // 200ms
 
   // Sleep for 250 milliseconds,
-  // give the worker time to schedule the first periodic task.
+  // give the scheduler time to schedule the first periodic task.
   QTest::qWait(250);
 
   auto updatedListOfTasks = TaskScheduler::tasks();
@@ -58,7 +58,6 @@ void TestGetFeatureListScheduler::testTaskIsScheduledPeriodically() {
   // We are expecting two tasks, the task scheduled on start + 1.
   QCOMPARE(initialListOfTasks.count() + 2, updatedListOfTasks.count());
 
-  // Check that the tasks are TaskGetFeatureList, just in case.
   // Check that the tasks are TaskGetFeatureList, just in case.
   for (int i = 0; i < 2; ++i) {
     const TaskGetFeatureList* task =
@@ -80,8 +79,8 @@ void TestGetFeatureListScheduler::testTaskIsScheduledOnTokenChange() {
 
   auto initialListOfTasks = TaskScheduler::tasks();
 
-  GetFeatureListScheduler worker;
-  worker.start(1 * 1000 * 60 * 60);  // 1hr
+  GetFeatureListScheduler scheduler;
+  scheduler.start(1 * 1000 * 60 * 60);  // 1hr
 
   settingsHolder.setToken("aToken");
   settingsHolder.setToken("anotherToken");
@@ -114,11 +113,11 @@ void TestGetFeatureListScheduler::testTimerIsStoppedOnDestruction() {
   auto initialListOfTasks = TaskScheduler::tasks();
 
   {
-    GetFeatureListScheduler worker;
-    worker.start(200);  // 200ms
+    GetFeatureListScheduler scheduler;
+    scheduler.start(200);  // 200ms
 
     // Sleep for 250 milliseconds,
-    // give the worker time to schedule the first periodic task.
+    // give the scheduler time to schedule the first periodic task.
     QTest::qWait(250);
 
     auto updatedListOfTasks = TaskScheduler::tasks();
@@ -126,7 +125,6 @@ void TestGetFeatureListScheduler::testTimerIsStoppedOnDestruction() {
     // We are expecting two tasks, the task scheduled on start + 1.
     QCOMPARE(initialListOfTasks.count() + 2, updatedListOfTasks.count());
 
-    // Check that the tasks are TaskGetFeatureList, just in case.
     // Check that the tasks are TaskGetFeatureList, just in case.
     for (int i = 0; i < 2; ++i) {
       const TaskGetFeatureList* task = dynamic_cast<const TaskGetFeatureList*>(
@@ -136,7 +134,7 @@ void TestGetFeatureListScheduler::testTimerIsStoppedOnDestruction() {
       QVERIFY(task);
     }
 
-    // Update the initial list of tasks before destruction of the worker.
+    // Update the initial list of tasks before destruction of the scheduler.
     initialListOfTasks = TaskScheduler::tasks();
   }
 
